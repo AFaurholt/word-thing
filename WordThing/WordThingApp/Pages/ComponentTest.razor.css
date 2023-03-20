@@ -1,0 +1,51 @@
+﻿.flex {
+    display: flex;
+    gap: 0.1cm;
+}
+
+.flex--col {
+    flex-direction: column;
+}
+
+.flex--wrap {
+    flex-wrap: wrap;
+}
+
+.cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 1cm;
+    width: 1cm;
+    background: #42A5F5;
+}
+
+.selected {
+    background: #81C784;
+}
+
+.tentative {
+    background: #FFD54F;
+}
+
+.empty {
+    background: #E0E0E0;
+}
+
+.spacer {
+    height: 1cm;
+}
+
+.fix {
+    /*position: fixed;*/
+    z-index: 9000;
+}
+
+.bottom {
+    margin-top: 1cm;
+    bottom: 0.1cm;
+}
+
+h1 {
+    font: 20px;
+}

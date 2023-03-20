@@ -1,0 +1,73 @@
+﻿@page "/test"
+
+<div class="flex">
+    <div class="flex flex--col">
+        @for (int i = 0; i < gridSize; i++)
+        {
+            <div class="flex">
+            @for (int j = 0; j < gridSize; j++)
+            {
+                    var x = j;
+                    var y = i;
+                    string colorClass = tentativeGrid[j, i] == default(char) ? "empty" :
+                        playGrid[j, i] == tentativeGrid[j, i] ? "selected" : "tentative";
+
+                <span @onclick="@(() => PutTentative(x, y))" data-coord="@j,@i" class="cell @colorClass">@tentativeGrid[j, i]</span>
+            }
+            </div>
+        }
+    </div>
+</div>
+<div class="flex flex--wrap fix bottom">
+    @foreach (var item in letters)
+    {
+        <span data-letter="@item" @onclick="@(() => Select(item))"
+              class="cell @(currentLetter == item ? "selected" : "")">@item</span>
+    }
+    <span @onclick="@(() => Select(default(char)))" class="cell">Del</span>
+    <span @onclick="@(() => CheckSpelling())" class="cell">Test</span>
+</div>
+<p>@contents</p>
+
+@code {
+        char currentLetter = 'A';
+        char[] letters = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'Æ', 'Ø', 'Å' };
+        const int gridSize = 16;
+        char[,] playGrid = new char[gridSize,gridSize];
+        char[,] tentativeGrid = new char[gridSize,gridSize];
+        string contents = "Loading...";
+
+        void Select(char letter)
+        {
+            currentLetter = letter;
+        }
+
+        void PutTentative(int x, int y)
+        {
+            Console.WriteLine($"coord: {x}, {y}");
+            if(playGrid[x, y] == default(char))
+            {
+                tentativeGrid[x, y] = currentLetter;
+            }
+        }
+
+        async void CheckSpelling()
+        {
+            Console.WriteLine($"Checking spelling");
+            await Task.Run(async () =>
+            {
+                Console.WriteLine($"IsMain: {MainThread.IsMainThread}");
+                await LoadMauiAsset();
+            });
+            Console.WriteLine("Done");
+        }
+
+        async Task LoadMauiAsset()
+        {
+            using var stream = await FileSystem.OpenAppPackageFileAsync("ddo_fullforms_2020-08-26.csv");
+            using var reader = new StreamReader(stream);
+            var tmp = reader.ReadLine();
+
+            MainThread.BeginInvokeOnMainThread(() => { contents = tmp; });
+        }
+}
